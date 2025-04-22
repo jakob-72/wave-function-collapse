@@ -1,0 +1,35 @@
+# top-down -> grass, beach & water
+rules:
+  - field: 1 # water
+    allowed_up: [ 1, 2 ]
+    allowed_right: [ 1, 2 ]
+    allowed_down: [ 1, 2 ]
+    allowed_left: [ 1, 2 ]
+  - field: 2 # beach
+    allowed_up: [ 1, 2, 3 ]
+    allowed_right: [ 1, 2, 3 ]
+    allowed_down: [ 1, 2, 3 ]
+    allowed_left: [ 1, 2, 3 ]
+  - field: 3 # grass
+    allowed_up: [ 2, 3 ]
+    allowed_right: [ 2, 3 ]
+    allowed_down: [ 2, 3 ]
+    allowed_left: [ 2, 3 ]
+
+# horizontal -> ground, trees & heaven - TODO fix
+#rules:
+#  - field: 1 # ground
+#    allowed_up: [ 1, 2 ]
+#    allowed_right: [ 1 ]
+#    allowed_down: [ 1 ]
+#    allowed_left: [ 1 ]
+#  - field: 2 # trees
+#    allowed_up: [ 2, 3 ]
+#    allowed_right: [ 2, 3 ]
+#    allowed_down: [ 1, 2 ]
+#    allowed_left: [ 2, 3 ]
+#  - field: 3 # heaven
+#    allowed_up: [ 3 ]
+#    allowed_right: [ 2, 3 ]
+#    allowed_down: [ 2, 3 ]
+#    allowed_left: [ 2, 3 ]
