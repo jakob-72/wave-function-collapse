@@ -30,6 +30,9 @@ impl WFC {
     }
 
     fn propagate_constraints(&mut self, position: Vec2i) {
+        if !self.is_in_bounds(position) {
+            return;
+        }
         if self.matrix[(position.x as usize, position.y as usize)] != -1 {
             return;
         }
@@ -76,6 +79,6 @@ impl WFC {
     }
 
     pub fn print_matrix(&self) {
-        println!("{}", self.matrix);
+        self.matrix.display_colorful();
     }
 }
