@@ -9,6 +9,7 @@ pub struct WFC {
     matrix: Matrix,
     ruleset: Ruleset,
     available_fields: Vec<i8>,
+    fields_to_process: Vec<Vec2i>,
 }
 
 impl WFC {
@@ -17,6 +18,7 @@ impl WFC {
             matrix: Matrix::new(cols, rows),
             available_fields: ruleset.all_fields(),
             ruleset,
+            fields_to_process: vec![],
         }
     }
 
@@ -24,32 +26,37 @@ impl WFC {
         println!("Running WFC algorithm...");
         let x = random_range(0..self.matrix.cols);
         let y = random_range(0..self.matrix.rows);
-        let start_pos = Vec2i::new(x as i32, y as i32);
-        self.propagate_constraints(start_pos);
+        self.fields_to_process.push(Vec2i::new(x as i32, y as i32));
+
+        while !self.fields_to_process.is_empty() {
+            let next_pos = self.fields_to_process.pop().unwrap();
+            self.eval_position(next_pos);
+        }
+
         Ok(())
     }
 
-    fn propagate_constraints(&mut self, position: Vec2i) {
-        if !self.is_in_bounds(position) {
+    fn eval_position(&mut self, pos: Vec2i) {
+        if !self.is_in_bounds(pos) {
             return;
         }
-        if self.matrix[(position.x as usize, position.y as usize)] != -1 {
+        if self.matrix[(pos.x as usize, pos.y as usize)] != -1 {
             return;
         }
-        let possible_states_for_pos = self.get_possible_states(position);
-        if possible_states_for_pos.is_empty() {
-            eprintln!("No possible states for position: {:?}", position);
+        let possible_states = self.get_possible_states(pos);
+        if possible_states.is_empty() {
+            eprintln!("No possible states for position: {:?}", pos);
             return;
         }
-        let selected_field = possible_states_for_pos
-            .choose(&mut rand::rng())
-            .unwrap()
-            .clone();
-        self.matrix[(position.x as usize, position.y as usize)] = selected_field;
+        let selected_field = possible_states.choose(&mut rand::rng()).unwrap().clone();
+        self.matrix[(pos.x as usize, pos.y as usize)] = selected_field;
+
         for dir in [UP, RIGHT, DOWN, LEFT] {
-            let neighbor_coords = position + dir;
+            let neighbor_coords = pos + dir;
             if self.is_in_bounds(neighbor_coords) {
-                self.propagate_constraints(neighbor_coords);
+                if self.matrix[(neighbor_coords.x as usize, neighbor_coords.y as usize)] == -1 {
+                    self.fields_to_process.push(neighbor_coords);
+                }
             }
         }
     }
