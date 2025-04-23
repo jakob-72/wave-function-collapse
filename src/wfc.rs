@@ -24,6 +24,7 @@ impl WFC {
 
     pub fn run(&mut self) -> Result<()> {
         println!("Running WFC algorithm...");
+        let start = std::time::Instant::now();
         let x = random_range(0..self.matrix.cols);
         let y = random_range(0..self.matrix.rows);
         self.fields_to_process.push(Vec2i::new(x as i32, y as i32));
@@ -33,6 +34,7 @@ impl WFC {
             self.eval_position(next_pos);
         }
 
+        println!("Finished in {:.2?}", start.elapsed());
         Ok(())
     }
 
@@ -86,6 +88,10 @@ impl WFC {
     }
 
     pub fn print_matrix(&self) {
+        if self.matrix.cols * self.matrix.rows > 10_000 {
+            println!("Matrix is too large to display.");
+            return;
+        }
         self.matrix.display_colorful();
     }
 }
