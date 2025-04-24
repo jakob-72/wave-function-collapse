@@ -1,4 +1,4 @@
-use crate::shared::WFCError;
+use crate::shared::WfcError;
 use rules::Ruleset;
 use std::io;
 
@@ -8,7 +8,7 @@ mod shared;
 mod vec2i;
 mod wfc;
 
-pub type Result<T> = std::result::Result<T, WFCError>;
+pub type Result<T> = std::result::Result<T, WfcError>;
 
 const DEFAULT_RULESET_FILE: &str = "dev/rules.yaml";
 

@@ -1,4 +1,4 @@
-use crate::shared::WFCError;
+use crate::shared::WfcError;
 use crate::vec2i;
 use crate::vec2i::Vec2i;
 use serde::Deserialize;
@@ -35,13 +35,13 @@ impl Ruleset {
                 RIGHT => Ok(&rule.allowed_right),
                 DOWN => Ok(&rule.allowed_down),
                 LEFT => Ok(&rule.allowed_left),
-                _ => Err(WFCError::new(format!(
+                _ => Err(WfcError::new(format!(
                     "get_allowed_fields -> Invalid direction: {:?}",
                     direction,
                 ))),
             };
         }
-        Err(WFCError::new(format!(
+        Err(WfcError::new(format!(
             "get_allowed_fields -> No rule found for field: {}",
             field
         )))

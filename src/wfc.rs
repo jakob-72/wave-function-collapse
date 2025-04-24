@@ -1,7 +1,7 @@
 use crate::Result;
 use crate::matrix::Matrix;
 use crate::rules::Ruleset;
-use crate::shared::WFCError;
+use crate::shared::WfcError;
 use crate::vec2i::{DOWN, LEFT, RIGHT, UP, Vec2i};
 use rand::prelude::IndexedRandom;
 use rand::random_range;
@@ -47,7 +47,7 @@ impl Wfc {
         }
         let possible_states = self.get_possible_states(pos)?;
         if possible_states.is_empty() {
-            return Err(WFCError::new(format!(
+            return Err(WfcError::new(format!(
                 "No possible states for position: {:?}",
                 pos
             )));
