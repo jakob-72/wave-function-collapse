@@ -1,3 +1,4 @@
+use crate::shared::WFCError;
 use crate::vec2i;
 use crate::vec2i::Vec2i;
 use serde::Deserialize;
@@ -26,22 +27,24 @@ impl Ruleset {
         self.rules.iter().map(|rule| rule.field).collect()
     }
 
-    pub fn get_allowed_fields(&self, field: i8, direction: Vec2i) -> Vec<i8> {
+    pub fn get_allowed_fields(&self, field: i8, direction: Vec2i) -> crate::Result<&Vec<i8>> {
         let rule = self.rules.iter().find(|rule| rule.field == field);
         if let Some(rule) = rule {
             return match direction {
-                UP => rule.allowed_up.clone(),
-                RIGHT => rule.allowed_right.clone(),
-                DOWN => rule.allowed_down.clone(),
-                LEFT => rule.allowed_left.clone(),
-                _ => {
-                    eprintln!("get_allowed_fields -> Invalid direction: {:?}", direction);
-                    vec![]
-                }
+                UP => Ok(&rule.allowed_up),
+                RIGHT => Ok(&rule.allowed_right),
+                DOWN => Ok(&rule.allowed_down),
+                LEFT => Ok(&rule.allowed_left),
+                _ => Err(WFCError::new(format!(
+                    "get_allowed_fields -> Invalid direction: {:?}",
+                    direction,
+                ))),
             };
         }
-        eprintln!("get_allowed_fields -> No rule found for field: {}", field);
-        vec![]
+        Err(WFCError::new(format!(
+            "get_allowed_fields -> No rule found for field: {}",
+            field
+        )))
     }
 }
 
@@ -91,13 +94,13 @@ mod tests {
     #[test]
     fn test_get_allowed_fields() {
         let ruleset = Ruleset::from_yaml(RULESET_YAML).unwrap();
-        let allowed_up = ruleset.get_allowed_fields(1, UP);
-        assert_eq!(allowed_up, vec![2, 3]);
-        let allowed_right = ruleset.get_allowed_fields(1, RIGHT);
-        assert_eq!(allowed_right, vec![4, 5]);
-        let allowed_down = ruleset.get_allowed_fields(1, DOWN);
-        assert_eq!(allowed_down, vec![6, 7]);
-        let allowed_left = ruleset.get_allowed_fields(1, LEFT);
-        assert_eq!(allowed_left, vec![8, 9]);
+        let allowed_up = ruleset.get_allowed_fields(1, UP).unwrap();
+        assert_eq!(allowed_up, &vec![2, 3]);
+        let allowed_right = ruleset.get_allowed_fields(1, RIGHT).unwrap();
+        assert_eq!(allowed_right, &vec![4, 5]);
+        let allowed_down = ruleset.get_allowed_fields(1, DOWN).unwrap();
+        assert_eq!(allowed_down, &vec![6, 7]);
+        let allowed_left = ruleset.get_allowed_fields(1, LEFT).unwrap();
+        assert_eq!(allowed_left, &vec![8, 9]);
     }
 }

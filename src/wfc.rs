@@ -1,20 +1,21 @@
 use crate::Result;
 use crate::matrix::Matrix;
 use crate::rules::Ruleset;
+use crate::shared::WFCError;
 use crate::vec2i::{DOWN, LEFT, RIGHT, UP, Vec2i};
 use rand::prelude::IndexedRandom;
 use rand::random_range;
 
-pub struct WFC {
+pub struct Wfc {
     matrix: Matrix,
     ruleset: Ruleset,
     available_fields: Vec<i8>,
     fields_to_process: Vec<Vec2i>,
 }
 
-impl WFC {
+impl Wfc {
     pub fn new(cols: usize, rows: usize, ruleset: Ruleset) -> Self {
-        WFC {
+        Wfc {
             matrix: Matrix::new(cols, rows),
             available_fields: ruleset.all_fields(),
             ruleset,
@@ -29,41 +30,43 @@ impl WFC {
         let y = random_range(0..self.matrix.rows);
         self.fields_to_process.push(Vec2i::new(x as i32, y as i32));
 
-        while !self.fields_to_process.is_empty() {
-            let next_pos = self.fields_to_process.pop().unwrap();
-            self.eval_position(next_pos);
+        while let Some(next_pos) = self.fields_to_process.pop() {
+            self.eval_position(next_pos)?;
         }
 
         println!("Finished in {:.2?}", start.elapsed());
         Ok(())
     }
 
-    fn eval_position(&mut self, pos: Vec2i) {
+    fn eval_position(&mut self, pos: Vec2i) -> Result<()> {
         if !self.is_in_bounds(pos) {
-            return;
+            return Ok(());
         }
         if self.matrix[(pos.x as usize, pos.y as usize)] != -1 {
-            return;
+            return Ok(());
         }
-        let possible_states = self.get_possible_states(pos);
+        let possible_states = self.get_possible_states(pos)?;
         if possible_states.is_empty() {
-            eprintln!("No possible states for position: {:?}", pos);
-            return;
+            return Err(WFCError::new(format!(
+                "No possible states for position: {:?}",
+                pos
+            )));
         }
-        let selected_field = possible_states.choose(&mut rand::rng()).unwrap().clone();
-        self.matrix[(pos.x as usize, pos.y as usize)] = selected_field;
+        let selected_field = possible_states.choose(&mut rand::rng()).unwrap();
+        self.matrix[(pos.x as usize, pos.y as usize)] = *selected_field;
 
         for dir in [UP, RIGHT, DOWN, LEFT] {
             let neighbor_coords = pos + dir;
-            if self.is_in_bounds(neighbor_coords) {
-                if self.matrix[(neighbor_coords.x as usize, neighbor_coords.y as usize)] == -1 {
-                    self.fields_to_process.push(neighbor_coords);
-                }
+            if self.is_in_bounds(neighbor_coords)
+                && self.matrix[(neighbor_coords.x as usize, neighbor_coords.y as usize)] == -1
+            {
+                self.fields_to_process.push(neighbor_coords);
             }
         }
+        Ok(())
     }
 
-    fn get_possible_states(&self, coords: Vec2i) -> Vec<i8> {
+    fn get_possible_states(&self, coords: Vec2i) -> Result<Vec<i8>> {
         let mut result = self.available_fields.clone();
         for dir in [UP, RIGHT, DOWN, LEFT] {
             let neighbor_coords = coords + dir;
@@ -73,11 +76,11 @@ impl WFC {
                 if neighbor_field == -1 {
                     continue;
                 }
-                let allowed_fields = self.ruleset.get_allowed_fields(neighbor_field, dir.inv());
+                let allowed_fields = self.ruleset.get_allowed_fields(neighbor_field, dir.inv())?;
                 result.retain(|&field| allowed_fields.contains(&field));
             }
         }
-        result
+        Ok(result)
     }
 
     fn is_in_bounds(&self, coords: Vec2i) -> bool {

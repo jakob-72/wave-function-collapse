@@ -19,7 +19,7 @@ fn main() -> Result<()> {
     println!("Enter the number of rows: ");
     let rows = get_number_from_input()?;
 
-    let mut wfc = wfc::WFC::new(cols, rows, ruleset);
+    let mut wfc = wfc::Wfc::new(cols, rows, ruleset);
     wfc.run()?;
     wfc.print_matrix();
     Ok(())
