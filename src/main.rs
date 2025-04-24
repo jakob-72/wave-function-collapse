@@ -1,6 +1,7 @@
 use crate::shared::WfcError;
 use rules::Ruleset;
 use std::io;
+use wfc::Wfc;
 
 mod matrix;
 mod rules;
@@ -19,7 +20,7 @@ fn main() -> Result<()> {
     println!("Enter the number of rows: ");
     let rows = get_number_from_input()?;
 
-    let mut wfc = wfc::Wfc::new(cols, rows, ruleset);
+    let mut wfc = Wfc::new(cols, rows, ruleset);
     wfc.run()?;
     wfc.print_matrix();
     Ok(())
