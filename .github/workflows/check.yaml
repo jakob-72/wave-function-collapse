@@ -1,0 +1,26 @@
+name: Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+
+jobs:
+  check:
+    name: Check Auth-Service
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Run Cargo Check
+        run: cargo check
+      - name: Run Cargo Clippy (Linter)
+        run: cargo clippy -- -D warnings
+      - name: Run Cargo Test
+        run: cargo test
