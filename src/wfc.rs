@@ -5,6 +5,7 @@ use crate::shared::WfcError;
 use crate::vec2i::{DOWN, LEFT, RIGHT, UP, Vec2i};
 use rand::prelude::IndexedRandom;
 use rand::random_range;
+use std::collections::{HashMap, VecDeque};
 
 /// The Wave Function Collapse (WFC) algorithm implementation.
 pub struct Wfc {
@@ -19,7 +20,7 @@ pub struct Wfc {
     /// The list of fields to process. This is a list of coordinates that have not been processed yet.
     /// This is an alternative to using a recursive function to avoid stack overflow.
     /// This way we can process the fields in a non-recursive manner and keep track of the fields on the heap.
-    fields_to_process: Vec<Vec2i>,
+    fields_to_process: VecDeque<Vec2i>,
 }
 
 impl Wfc {
@@ -28,7 +29,7 @@ impl Wfc {
             matrix: Matrix::new(cols, rows),
             available_fields: ruleset.all_fields(),
             ruleset,
-            fields_to_process: vec![],
+            fields_to_process: VecDeque::new(),
         }
     }
 
@@ -37,9 +38,10 @@ impl Wfc {
         let start = std::time::Instant::now();
         let x = random_range(0..self.matrix.cols);
         let y = random_range(0..self.matrix.rows);
-        self.fields_to_process.push(Vec2i::new(x as i32, y as i32));
+        self.fields_to_process
+            .push_front(Vec2i::new(x as i32, y as i32));
 
-        while let Some(next_pos) = self.fields_to_process.pop() {
+        while let Some(next_pos) = self.fields_to_process.pop_front() {
             self.eval_position(next_pos)?;
         }
 
@@ -68,9 +70,29 @@ impl Wfc {
         }
         let possible_states = self.get_possible_states(pos)?;
         if possible_states.is_empty() {
+            let mut neighbors = HashMap::new();
+            for dir in [UP, RIGHT, DOWN, LEFT] {
+                let neighbor_coords = pos + dir;
+                if self.is_in_bounds(neighbor_coords) {
+                    let neighbor_field =
+                        self.matrix[(neighbor_coords.x as usize, neighbor_coords.y as usize)];
+                    if neighbor_field != -1 {
+                        neighbors.insert(
+                            match dir {
+                                UP => "up",
+                                RIGHT => "right",
+                                DOWN => "down",
+                                LEFT => "left",
+                                _ => unreachable!(),
+                            },
+                            neighbor_field,
+                        );
+                    }
+                }
+            }
             return Err(WfcError::new(format!(
-                "No possible states for position: {:?}",
-                pos
+                "No possible states for position: {:?}, neighbors: {:?} - check ruleset",
+                pos, neighbors
             )));
         }
         let selected_field = possible_states.choose(&mut rand::rng()).unwrap();
@@ -81,7 +103,7 @@ impl Wfc {
             if self.is_in_bounds(neighbor_coords)
                 && self.matrix[(neighbor_coords.x as usize, neighbor_coords.y as usize)] == -1
             {
-                self.fields_to_process.push(neighbor_coords);
+                self.fields_to_process.push_back(neighbor_coords);
             }
         }
         Ok(())

@@ -64,3 +64,4 @@ as a simple grid of numbers.
 - [ ] Add a generic way to display colors based on the values in the matrix.
 - [ ] let the user choose custom colors for the colorful display.
 - [ ] Add a way to save the matrix to a file.
+- [ ] Add a weighting value to the rules to allow for more control over the generation process.

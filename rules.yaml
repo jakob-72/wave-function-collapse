@@ -1,4 +1,4 @@
-# top-down -> grass, beach & water
+# top-down: landscape -> grass, beach & water
 rules:
   - field: 1 # water
     allowed_up: [ 1, 2 ]
@@ -16,20 +16,20 @@ rules:
     allowed_down: [ 2, 3 ]
     allowed_left: [ 2, 3 ]
 
-# horizontal -> ground, trees & heaven - TODO fix
+# horizontal:# horizontal: cave -> ground, open & ceiling
 #rules:
 #  - field: 1 # ground
-#    allowed_up: [ 1, 2 ]
-#    allowed_right: [ 1 ]
+#    allowed_up: [ 2 ]
+#    allowed_right: [ 1, 2 ]
 #    allowed_down: [ 1 ]
-#    allowed_left: [ 1 ]
-#  - field: 2 # trees
+#    allowed_left: [ 1, 2 ]
+#  - field: 2 # open cave
 #    allowed_up: [ 2, 3 ]
-#    allowed_right: [ 2, 3 ]
+#    allowed_right: [ 1, 2, 3 ]
 #    allowed_down: [ 1, 2 ]
-#    allowed_left: [ 2, 3 ]
-#  - field: 3 # heaven
+#    allowed_left: [ 1, 2, 3 ]
+#  - field: 3 # ceiling
 #    allowed_up: [ 3 ]
 #    allowed_right: [ 2, 3 ]
-#    allowed_down: [ 2, 3 ]
+#    allowed_down: [ 2 ]
 #    allowed_left: [ 2, 3 ]
