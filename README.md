@@ -3,9 +3,8 @@
 This project is a simple example of the Wave Function Collapse algorithm, which is used for procedural content
 generation. The algorithm is based on the concept of superposition in quantum mechanics.
 
-This implementation uses a matrix (2D array of positive integers) of a size defined by the user and propagates the
-values
-based on a ruleset that is provided via a YAML file.
+This implementation uses a matrix (2D array of integers) of a size defined by the user and propagates the
+values based on a ruleset that is provided via a YAML file.
 
 ## Local Setup
 
@@ -33,6 +32,8 @@ The rules are defined in a YAML file located in the root directory of the projec
 binary) and must be named `rules.yaml`. The rules are defined as a list of fields, where each field represents a type of
 tile/state within the matrix. Each field has a set of allowed neighbors, which are defined as a list of integers.
 
+You may not use the value `-1` in the rules, as it is reserved for the empty/superposition state of the matrix.
+
 Example:
 
 ```
@@ -53,15 +54,15 @@ states it could collapse into.
 ## Displaying
 
 If the matrix is too large (above 100x100) the program will not display the matrix in the terminal.
-For smaller matrices, the program will display the matrix as a colored grid (For now with hardcoded colors &values).
+For smaller matrices, the program will display the matrix as a colored grid (For now with hardcoded colors & values).
 If you change the constant `PRINT_COLORFUL` in the file `src/main.rs` to `false`, the program will display the matrix
 as a simple grid of numbers.
 
 ## Prospective Features
 
-- [ ] Add CLI support to the program to directly pass the required parameters (matrix size, rules file, etc.) as
-  command line arguments.
+- [ ] Add a weighting value to the rules to allow for more control over the generation process.
 - [ ] Add a generic way to display colors based on the values in the matrix.
 - [ ] let the user choose custom colors for the colorful display.
+- [ ] Add CLI support to the program to directly pass the required parameters (matrix size, rules file, etc.) as
+  command line arguments.
 - [ ] Add a way to save the matrix to a file.
-- [ ] Add a weighting value to the rules to allow for more control over the generation process.
