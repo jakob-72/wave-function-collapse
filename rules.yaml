@@ -16,7 +16,7 @@ rules:
     allowed_down: [ 2, 3 ]
     allowed_left: [ 2, 3 ]
 
-# horizontal:# horizontal: cave -> ground, open & ceiling
+# horizontal: cave -> ground, open & ceiling
 #rules:
 #  - field: 1 # ground
 #    allowed_up: [ 2 ]
