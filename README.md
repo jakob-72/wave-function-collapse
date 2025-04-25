@@ -49,3 +49,18 @@ rules:
 
 Note that inconsistent rules will cause the algorithm to fail. For example, if a field evaluates to have no allowed
 states it could collapse into.
+
+## Displaying
+
+If the matrix is too large (above 100x100) the program will not display the matrix in the terminal.
+For smaller matrices, the program will display the matrix as a colored grid (For now with hardcoded colors &values).
+If you change the constant `PRINT_COLORFUL` in the file `src/main.rs` to `false`, the program will display the matrix
+as a simple grid of numbers.
+
+## Prospective Features
+
+- [ ] Add CLI support to the program to directly pass the required parameters (matrix size, rules file, etc.) as
+  command line arguments.
+- [ ] Add a generic way to display colors based on the values in the matrix.
+- [ ] let the user choose custom colors for the colorful display.
+- [ ] Add a way to save the matrix to a file.
