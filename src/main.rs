@@ -11,7 +11,7 @@ mod wfc;
 
 pub type Result<T> = std::result::Result<T, WfcError>;
 
-const DEFAULT_RULESET_FILE: &str = "dev/rules.yaml";
+const DEFAULT_RULESET_FILE: &str = "rules.yaml";
 
 fn main() -> Result<()> {
     let ruleset = read_ruleset_from_file()?;
