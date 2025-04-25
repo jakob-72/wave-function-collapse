@@ -7,6 +7,7 @@ pub const DOWN: Vec2i = Vec2i { x: 0, y: 1 };
 
 pub const LEFT: Vec2i = Vec2i { x: -1, y: 0 };
 
+/// Convenience struct for 2D integer Vectors/Points.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Vec2i {
     pub x: i32,

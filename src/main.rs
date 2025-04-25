@@ -13,6 +13,9 @@ pub type Result<T> = std::result::Result<T, WfcError>;
 
 const DEFAULT_RULESET_FILE: &str = "rules.yaml";
 
+/// change to false for default matrix display
+const PRINT_COLORFUL: bool = true;
+
 fn main() -> Result<()> {
     let ruleset = read_ruleset_from_file()?;
     println!("Enter the number of columns: ");
@@ -22,7 +25,7 @@ fn main() -> Result<()> {
 
     let mut wfc = Wfc::new(cols, rows, ruleset);
     wfc.run()?;
-    wfc.print_matrix();
+    wfc.print_matrix(PRINT_COLORFUL);
     Ok(())
 }
 

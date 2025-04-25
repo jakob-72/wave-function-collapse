@@ -5,6 +5,7 @@ use serde::Deserialize;
 use serde_yaml::from_str;
 use vec2i::{DOWN, LEFT, RIGHT, UP};
 
+/// Ruleset is a struct that contains a list of rules for the WFC algorithm.
 #[derive(Debug, Deserialize)]
 pub struct Ruleset {
     rules: Vec<Rule>,

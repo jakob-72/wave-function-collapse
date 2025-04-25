@@ -6,10 +6,19 @@ use crate::vec2i::{DOWN, LEFT, RIGHT, UP, Vec2i};
 use rand::prelude::IndexedRandom;
 use rand::random_range;
 
+/// The Wave Function Collapse (WFC) algorithm implementation.
 pub struct Wfc {
+    /// The matrix representing the current state of the WFC algorithm.
+    /// Will be initialized with -1 (representing superposition). After the algorithm runs,
+    /// it will contain the final state.
     matrix: Matrix,
+    /// The ruleset defining the constraints of each state. Provided by the user.
     ruleset: Ruleset,
+    /// The list of all available fields (states) for the WFC algorithm provided by the ruleset.
     available_fields: Vec<i8>,
+    /// The list of fields to process. This is a list of coordinates that have not been processed yet.
+    /// This is an alternative to using a recursive function to avoid stack overflow.
+    /// This way we can process the fields in a non-recursive manner and keep track of the fields on the heap.
     fields_to_process: Vec<Vec2i>,
 }
 
@@ -36,6 +45,18 @@ impl Wfc {
 
         println!("Finished in {:.2?}", start.elapsed());
         Ok(())
+    }
+
+    pub fn print_matrix(&self, colorful: bool) {
+        if self.matrix.cols * self.matrix.rows > 10_000 {
+            println!("Matrix is too large to display.");
+            return;
+        }
+        if colorful {
+            self.matrix.display_colorful();
+        } else {
+            println!("{}", self.matrix);
+        }
     }
 
     fn eval_position(&mut self, pos: Vec2i) -> Result<()> {
@@ -88,13 +109,5 @@ impl Wfc {
             && coords.x >= 0
             && coords.y < self.matrix.rows as i32
             && coords.y >= 0
-    }
-
-    pub fn print_matrix(&self) {
-        if self.matrix.cols * self.matrix.rows > 10_000 {
-            println!("Matrix is too large to display.");
-            return;
-        }
-        self.matrix.display_colorful();
     }
 }

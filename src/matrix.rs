@@ -1,6 +1,7 @@
 use std::fmt::{Display, Formatter};
 use std::ops;
 
+/// A simple matrix struct for 2D grid representation
 pub struct Matrix {
     pub cols: usize,
     pub rows: usize,
@@ -16,6 +17,8 @@ impl Matrix {
         }
     }
 
+    /// Print the matrix with colors for different values
+    /// TODO - for now the colors are static & hardcoded for the water/beach/grass example ruleset
     pub fn display_colorful(&self) {
         for y in 0..self.rows {
             for x in 0..self.cols {
@@ -51,6 +54,9 @@ impl ops::IndexMut<(usize, usize)> for Matrix {
 
 impl Display for Matrix {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        if self.cols * self.rows > 10_000 {
+            return write!(f, "Matrix is too large to display.");
+        }
         for y in 0..self.rows {
             for x in 0..self.cols {
                 write!(f, "{:1} ", self[(x, y)])?;

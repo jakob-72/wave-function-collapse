@@ -3,6 +3,7 @@ use std::fmt::Display;
 use std::io;
 use std::num::ParseIntError;
 
+/// Custom error type for the WFC algorithm.
 #[derive(Debug)]
 pub struct WfcError {
     message: String,
