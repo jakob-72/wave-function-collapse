@@ -3,8 +3,7 @@ use crate::matrix::Matrix;
 use crate::rules::Ruleset;
 use crate::shared::WfcError;
 use crate::vec2i::{DOWN, LEFT, RIGHT, UP, Vec2i};
-use rand::prelude::IndexedRandom;
-use rand::random_range;
+use rand::{Rng, random_range};
 use std::collections::{HashMap, VecDeque};
 
 /// The Wave Function Collapse (WFC) algorithm implementation.
@@ -95,8 +94,8 @@ impl Wfc {
                 pos, neighbors
             )));
         }
-        let selected_field = possible_states.choose(&mut rand::rng()).unwrap();
-        self.matrix[(pos.x as usize, pos.y as usize)] = *selected_field;
+        let selected_field = choose_weighted(possible_states)?;
+        self.matrix[(pos.x as usize, pos.y as usize)] = selected_field;
 
         for dir in [UP, RIGHT, DOWN, LEFT] {
             let neighbor_coords = pos + dir;
@@ -109,8 +108,13 @@ impl Wfc {
         Ok(())
     }
 
-    fn get_possible_states(&self, coords: Vec2i) -> Result<Vec<i8>> {
-        let mut result = self.available_fields.clone();
+    fn get_possible_states(&self, coords: Vec2i) -> Result<HashMap<i8, f32>> {
+        let mut result = HashMap::from_iter(
+            self.available_fields
+                .iter()
+                .map(|&field| (field, 1.0))
+                .collect::<Vec<_>>(),
+        );
         for dir in [UP, RIGHT, DOWN, LEFT] {
             let neighbor_coords = coords + dir;
             if self.is_in_bounds(neighbor_coords) {
@@ -120,7 +124,14 @@ impl Wfc {
                     continue;
                 }
                 let allowed_fields = self.ruleset.get_allowed_fields(neighbor_field, dir.inv())?;
-                result.retain(|&field| allowed_fields.contains(&field));
+                result.retain(|&field, _| allowed_fields.contains_key(&field));
+                for (field, weight) in allowed_fields {
+                    if let Some(existing_weight) = result.get_mut(field) {
+                        if existing_weight != weight {
+                            *existing_weight *= weight;
+                        }
+                    }
+                }
             }
         }
         Ok(result)
@@ -132,4 +143,21 @@ impl Wfc {
             && coords.y < self.matrix.rows as i32
             && coords.y >= 0
     }
+}
+
+fn choose_weighted(options: HashMap<i8, f32>) -> Result<i8> {
+    let total_weight: f32 = options.values().sum();
+    let mut rng = rand::rng();
+    let random_value: f32 = rng.random_range(0.0..total_weight);
+    let mut cumulative_weight = 0.0;
+    for (field, weight) in options {
+        cumulative_weight += weight;
+        if random_value < cumulative_weight {
+            return Ok(field);
+        }
+    }
+    Err(WfcError::new(
+        "choose_weighted -> No field selected - this should not happen with valid weights"
+            .to_string(),
+    ))
 }

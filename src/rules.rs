@@ -3,6 +3,7 @@ use crate::vec2i;
 use crate::vec2i::Vec2i;
 use serde::Deserialize;
 use serde_yaml::from_str;
+use std::collections::HashMap;
 use vec2i::{DOWN, LEFT, RIGHT, UP};
 
 /// Ruleset is a struct that contains a list of rules for the WFC algorithm.
@@ -13,10 +14,10 @@ pub struct Ruleset {
 #[derive(Debug, Deserialize)]
 struct Rule {
     field: i8,
-    allowed_up: Vec<i8>,
-    allowed_right: Vec<i8>,
-    allowed_down: Vec<i8>,
-    allowed_left: Vec<i8>,
+    allowed_up: HashMap<i8, f32>,
+    allowed_right: HashMap<i8, f32>,
+    allowed_down: HashMap<i8, f32>,
+    allowed_left: HashMap<i8, f32>,
 }
 
 impl Ruleset {
@@ -28,7 +29,11 @@ impl Ruleset {
         self.rules.iter().map(|rule| rule.field).collect()
     }
 
-    pub fn get_allowed_fields(&self, field: i8, direction: Vec2i) -> crate::Result<&Vec<i8>> {
+    pub fn get_allowed_fields(
+        &self,
+        field: i8,
+        direction: Vec2i,
+    ) -> crate::Result<&HashMap<i8, f32>> {
         let rule = self.rules.iter().find(|rule| rule.field == field);
         if let Some(rule) = rule {
             return match direction {
@@ -56,15 +61,31 @@ mod tests {
     const RULESET_YAML: &str = r#"
     rules:
       - field: 1
-        allowed_up: [2, 3]
-        allowed_right: [4, 5]
-        allowed_down: [6, 7]
-        allowed_left: [8, 9]
+        allowed_up:
+            1: 0.5
+            2: 1.0
+        allowed_right:
+            1: 1.0
+            3: 1.0
+        allowed_down:
+            2: 1.0
+            4: 0.9
+        allowed_left:
+            1: 0.4
+            3: 1.0
       - field: 2
-        allowed_up: [1]
-        allowed_right: [3]
-        allowed_down: [4]
-        allowed_left: [5]
+        allowed_up:
+            1: 1.0
+            2: 1.0
+        allowed_right:
+            1: 1.0
+            3: 1.0
+        allowed_down:
+            2: 1.0
+            4: 0.9
+        allowed_left:
+            1: 0.5
+            3: 1.0
     "#;
 
     #[test]
@@ -73,14 +94,16 @@ mod tests {
         assert_eq!(ruleset.rules.len(), 2);
         assert_eq!(ruleset.rules[0].field, 1);
         assert_eq!(ruleset.rules[1].field, 2);
-        assert_eq!(ruleset.rules[0].allowed_up, vec![2, 3]);
-        assert_eq!(ruleset.rules[0].allowed_right, vec![4, 5]);
-        assert_eq!(ruleset.rules[0].allowed_down, vec![6, 7]);
-        assert_eq!(ruleset.rules[0].allowed_left, vec![8, 9]);
-        assert_eq!(ruleset.rules[1].allowed_up, vec![1]);
-        assert_eq!(ruleset.rules[1].allowed_right, vec![3]);
-        assert_eq!(ruleset.rules[1].allowed_down, vec![4]);
-        assert_eq!(ruleset.rules[1].allowed_left, vec![5]);
+        assert_eq!(ruleset.rules[0].allowed_up.get(&1), Some(&0.5));
+        assert_eq!(ruleset.rules[0].allowed_up.get(&2), Some(&1.0));
+        assert_eq!(ruleset.rules[0].allowed_right.get(&1), Some(&1.0));
+        assert_eq!(ruleset.rules[0].allowed_right.get(&3), Some(&1.0));
+        assert_eq!(ruleset.rules[0].allowed_down.get(&2), Some(&1.0));
+        assert_eq!(ruleset.rules[0].allowed_down.get(&4), Some(&0.9));
+        assert_eq!(ruleset.rules[0].allowed_left.get(&1), Some(&0.4));
+        assert_eq!(ruleset.rules[0].allowed_left.get(&3), Some(&1.0));
+        assert_eq!(ruleset.rules[1].allowed_down.get(&4), Some(&0.9));
+        assert_eq!(ruleset.rules[1].allowed_left.get(&1), Some(&0.5));
         //println!("parsed ruleset: {:#?}", ruleset);
     }
 
@@ -96,12 +119,12 @@ mod tests {
     fn test_get_allowed_fields() {
         let ruleset = Ruleset::from_yaml(RULESET_YAML).unwrap();
         let allowed_up = ruleset.get_allowed_fields(1, UP).unwrap();
-        assert_eq!(allowed_up, &vec![2, 3]);
+        assert_eq!(allowed_up, &HashMap::from([(1, 0.5), (2, 1.0)]));
         let allowed_right = ruleset.get_allowed_fields(1, RIGHT).unwrap();
-        assert_eq!(allowed_right, &vec![4, 5]);
+        assert_eq!(allowed_right, &HashMap::from([(1, 1.0), (3, 1.0)]));
         let allowed_down = ruleset.get_allowed_fields(1, DOWN).unwrap();
-        assert_eq!(allowed_down, &vec![6, 7]);
+        assert_eq!(allowed_down, &HashMap::from([(2, 1.0), (4, 0.9)]));
         let allowed_left = ruleset.get_allowed_fields(1, LEFT).unwrap();
-        assert_eq!(allowed_left, &vec![8, 9]);
+        assert_eq!(allowed_left, &HashMap::from([(1, 0.4), (3, 1.0)]));
     }
 }
