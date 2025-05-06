@@ -1,3 +1,6 @@
+use crate::rules::Ruleset;
+use colored::{Color, Colorize};
+use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
 use std::ops;
 
@@ -7,6 +10,22 @@ pub struct Matrix {
     pub rows: usize,
     pub data: Vec<Vec<i8>>,
 }
+
+const BLOCK_CHAR: &str = "  ";
+const FALLBACK_COLORS: [Color; 12] = [
+    Color::Blue,
+    Color::Yellow,
+    Color::Green,
+    Color::Red,
+    Color::Magenta,
+    Color::Cyan,
+    Color::BrightRed,
+    Color::BrightGreen,
+    Color::BrightYellow,
+    Color::BrightBlue,
+    Color::BrightMagenta,
+    Color::BrightCyan,
+];
 
 impl Matrix {
     pub fn new(cols: usize, rows: usize) -> Self {
@@ -18,18 +37,27 @@ impl Matrix {
     }
 
     /// Print the matrix with colors for different values
-    /// TODO - for now the colors are static & hardcoded for the water/beach/grass example ruleset
-    pub fn display_colorful(&self) {
+    pub fn display_colorful(&self, ruleset: &Ruleset) {
+        let mut field_colors = HashMap::new();
+        let mut fallback_index = 0;
+
+        for &field in ruleset.all_fields().iter() {
+            if let Some(color) = ruleset.get_color_for_field(field) {
+                field_colors.insert(field, Color::from(color));
+            } else {
+                field_colors.insert(field, FALLBACK_COLORS[fallback_index]);
+                fallback_index = (fallback_index + 1) % FALLBACK_COLORS.len();
+            }
+        }
+
         for y in 0..self.rows {
             for x in 0..self.cols {
-                let value = self[(x, y)];
-                let color_code = match value {
-                    1 => "\x1b[44m  \x1b[0m", // Blue for water
-                    2 => "\x1b[43m  \x1b[0m", // Yellow for beach
-                    3 => "\x1b[42m  \x1b[0m", // Green for grass
-                    _ => "\x1b[47m  \x1b[0m", // White for undefined
-                };
-                print!("{}", color_code);
+                let field = self[(x, y)];
+                if let Some(&color) = field_colors.get(&field) {
+                    print!("{}", BLOCK_CHAR.on_color(color));
+                } else {
+                    print!("{}", BLOCK_CHAR.on_white()); // Default color for unknown fields
+                }
             }
             println!();
         }

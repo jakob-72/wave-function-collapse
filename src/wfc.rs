@@ -54,7 +54,7 @@ impl Wfc {
             return;
         }
         if colorful {
-            self.matrix.display_colorful();
+            self.matrix.display_colorful(&self.ruleset);
         } else {
             println!("{}", self.matrix);
         }

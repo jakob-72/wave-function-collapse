@@ -18,6 +18,7 @@ struct Rule {
     allowed_right: HashMap<i8, f32>,
     allowed_down: HashMap<i8, f32>,
     allowed_left: HashMap<i8, f32>,
+    color: Option<String>,
 }
 
 impl Ruleset {
@@ -51,6 +52,14 @@ impl Ruleset {
             "get_allowed_fields -> No rule found for field: {}",
             field
         )))
+    }
+
+    pub fn get_color_for_field(&self, field: i8) -> Option<String> {
+        let rule = self.rules.iter().find(|rule| rule.field == field);
+        if let Some(rule) = rule {
+            return rule.color.clone();
+        }
+        None
     }
 }
 

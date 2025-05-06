@@ -6,6 +6,13 @@ generation. The algorithm is based on the concept of superposition in quantum me
 This implementation uses a matrix (2D array of integers) of a size defined by the user and propagates the
 values based on a ruleset that is provided via a YAML file.
 
+## Table of Contents
+
+- [Local Setup](#local-setup)
+- [Rules Definition](#rules-definition)
+- [Displaying](#displaying)
+- [Prospective Features](#prospective-features)
+
 ## Local Setup
 
 This project requires Rust to be installed. You can install Rust by following the instructions
@@ -33,7 +40,7 @@ binary) and must be named `rules.yaml`. The rules are defined as a list of field
 tile/state within the matrix. Each field has a map of allowed neighbors in each direction (UP, RIGHT, DOWN, LEFT) with
 their corresponding weights. The weights are used to determine the probability of each neighbor being selected.
 Although the weights can be an arbitrary float value, it is recommended to use values that sum up to 1.0 for each
-direction. Weights are required to be a positive value that sums up above `0.0` per direction.
+direction. The weights must be positive values that sum to more than 0.0 per direction.
 
 You may not use the value `-1` in the rules, as it is reserved for the empty/superposition state of the matrix.
 
@@ -71,14 +78,46 @@ states it could collapse into.
 
 If the matrix is too large (above 100x100) the program will not display the matrix in the terminal.
 For smaller matrices, the program will display the matrix as a colored grid (For now with hardcoded colors & values).
-If you change the constant `PRINT_COLORFUL` in the file `src/main.rs` to `false`, the program will display the matrix
-as a simple grid of numbers.
+If you set the constant PRINT_COLORFUL in the file src/main.rs to false, the program will display the matrix as a simple
+grid of numbers.
+
+You can specify custom colors for each field within the rules file, e.g.
+
+```
+rules:
+  - field: 1
+    color: red
+    ...
+  - field: 2
+    color: blue
+```
+
+The colors are optional and if they are not specified, the program will use the default fallback colors.
+Allowed value for the `color` field are:
+
+- `black`
+- `red`
+- `green`
+- `yellow`
+- `blue`
+- `magenta`
+- `purple`
+- `cyan`
+- `white`
+- `bright black`
+- `bright red`
+- `bright green`
+- `bright yellow`
+- `bright blue`
+- `bright magenta`
+- `bright cyan`
+- `bright white`
 
 ## Prospective Features
 
 - [x] Add a weighting value to the rules to allow for more control over the generation process.
-- [ ] Add a generic way to display colors based on the values in the matrix.
-- [ ] let the user choose custom colors for the colorful display.
+- [x] Add a generic way to display colors based on the values in the matrix.
+- [x] let the user choose custom colors for the colorful display.
 - [ ] Add CLI support to the program to directly pass the required parameters (matrix size, rules file, etc.) as
   command line arguments.
 - [ ] Add a way to save the matrix to a file.
