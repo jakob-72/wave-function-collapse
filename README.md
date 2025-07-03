@@ -118,6 +118,6 @@ Allowed value for the `color` field are:
 - [x] Add a weighting value to the rules to allow for more control over the generation process.
 - [x] Add a generic way to display colors based on the values in the matrix.
 - [x] let the user choose custom colors for the colorful display.
+- [x] Add a way to save the matrix to a file.
 - [ ] Add CLI support to the program to directly pass the required parameters (matrix size, rules file, etc.) as
   command line arguments.
-- [ ] Add a way to save the matrix to a file.

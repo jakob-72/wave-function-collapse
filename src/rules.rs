@@ -43,14 +43,12 @@ impl Ruleset {
                 DOWN => Ok(&rule.allowed_down),
                 LEFT => Ok(&rule.allowed_left),
                 _ => Err(WfcError::new(format!(
-                    "get_allowed_fields -> Invalid direction: {:?}",
-                    direction,
+                    "get_allowed_fields -> Invalid direction: {direction:?}",
                 ))),
             };
         }
         Err(WfcError::new(format!(
-            "get_allowed_fields -> No rule found for field: {}",
-            field
+            "get_allowed_fields -> No rule found for field: {field}"
         )))
     }
 

@@ -16,6 +16,9 @@ const DEFAULT_RULESET_FILE: &str = "rules.yaml";
 /// change to false for default matrix display
 const PRINT_COLORFUL: bool = true;
 
+/// change to false to disable saving the output to a file
+const SAVE_TO_FILE: bool = true;
+
 fn main() -> Result<()> {
     let ruleset = read_ruleset_from_file()?;
     println!("Enter the number of columns: ");
@@ -24,7 +27,7 @@ fn main() -> Result<()> {
     let rows = get_number_from_input()?;
 
     let mut wfc = Wfc::new(cols, rows, ruleset);
-    wfc.run()?;
+    wfc.run(SAVE_TO_FILE)?;
     wfc.print_matrix(PRINT_COLORFUL);
     Ok(())
 }

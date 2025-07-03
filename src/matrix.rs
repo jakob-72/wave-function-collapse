@@ -2,7 +2,8 @@ use crate::rules::Ruleset;
 use colored::{Color, Colorize};
 use std::collections::HashMap;
 use std::fmt::{Display, Formatter};
-use std::ops;
+use std::io::Write;
+use std::{fs, io, ops};
 
 /// A simple matrix struct for 2D grid representation
 pub struct Matrix {
@@ -61,6 +62,18 @@ impl Matrix {
             }
             println!();
         }
+    }
+
+    /// Write the matrix to a file in a simple text format
+    pub fn write_to_file(&self, filename: &str) -> io::Result<()> {
+        let mut file = fs::File::create(filename)?;
+        for row in &self.data {
+            for &value in row {
+                write!(file, "{value},")?;
+            }
+            writeln!(file)?;
+        }
+        Ok(())
     }
 }
 

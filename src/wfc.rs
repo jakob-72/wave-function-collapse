@@ -6,6 +6,8 @@ use crate::vec2i::{DOWN, LEFT, RIGHT, UP, Vec2i};
 use rand::{Rng, random_range};
 use std::collections::{HashMap, VecDeque};
 
+const DEFAULT_FILE_NAME: &str = "output.csv";
+
 /// The Wave Function Collapse (WFC) algorithm implementation.
 pub struct Wfc {
     /// The matrix representing the current state of the WFC algorithm.
@@ -32,7 +34,7 @@ impl Wfc {
         }
     }
 
-    pub fn run(&mut self) -> Result<()> {
+    pub fn run(&mut self, save_to_file: bool) -> Result<()> {
         println!("Running WFC algorithm...");
         let start = std::time::Instant::now();
         let x = random_range(0..self.matrix.cols);
@@ -45,6 +47,9 @@ impl Wfc {
         }
 
         println!("Finished in {:.2?}", start.elapsed());
+        if save_to_file {
+            self.write_to_file(DEFAULT_FILE_NAME)?;
+        }
         Ok(())
     }
 
@@ -58,6 +63,11 @@ impl Wfc {
         } else {
             println!("{}", self.matrix);
         }
+    }
+
+    fn write_to_file(&self, filename: &str) -> Result<()> {
+        self.matrix.write_to_file(filename)?;
+        Ok(())
     }
 
     fn eval_position(&mut self, pos: Vec2i) -> Result<()> {
@@ -90,8 +100,7 @@ impl Wfc {
                 }
             }
             return Err(WfcError::new(format!(
-                "No possible states for position: {:?}, neighbors: {:?} - check ruleset",
-                pos, neighbors
+                "No possible states for position: {pos:?}, neighbors: {neighbors:?} - check ruleset"
             )));
         }
         let selected_field = choose_weighted(possible_states)?;
