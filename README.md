@@ -42,7 +42,8 @@ their corresponding weights. The weights are used to determine the probability o
 Although the weights can be an arbitrary float value, it is recommended to use values that sum up to 1.0 for each
 direction. The weights must be positive values that sum to more than 0.0 per direction.
 
-You may not use the value `-1` in the rules, as it is reserved for the empty/superposition state of the matrix.
+> [!NOTE]  
+> You may not use the value `-1` in the rules, as it is reserved for the empty/superposition state of the matrix.
 
 Example:
 
@@ -71,8 +72,9 @@ rules:
   ...
 ```
 
-Note that inconsistent rules will cause the algorithm to fail. For example, if a field evaluates to have no allowed
-states it could collapse into.
+> [!WARNING]  
+> Note that inconsistent rules will cause the algorithm to fail. For example, if a field evaluates to have no allowed
+> states it could collapse into.
 
 ## Displaying
 
