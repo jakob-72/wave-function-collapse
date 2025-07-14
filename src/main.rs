@@ -1,8 +1,11 @@
 use crate::shared::WfcError;
+use clap::Parser;
+use cli::Cli;
 use rules::Ruleset;
-use std::io;
+use std::{fs, io};
 use wfc::Wfc;
 
+mod cli;
 mod matrix;
 mod rules;
 mod shared;
@@ -11,8 +14,6 @@ mod wfc;
 
 pub type Result<T> = std::result::Result<T, WfcError>;
 
-const DEFAULT_RULESET_FILE: &str = "rules.yaml";
-
 /// change to false for default matrix display
 const PRINT_COLORFUL: bool = true;
 
@@ -20,11 +21,17 @@ const PRINT_COLORFUL: bool = true;
 const SAVE_TO_FILE: bool = true;
 
 fn main() -> Result<()> {
-    let ruleset = read_ruleset_from_file()?;
-    println!("Enter the number of columns: ");
-    let cols = get_number_from_input()?;
-    println!("Enter the number of rows: ");
-    let rows = get_number_from_input()?;
+    let cli = Cli::parse();
+
+    let ruleset = read_ruleset_from_file(cli.rules)?;
+    let cols = cli.cols.unwrap_or_else(|| {
+        println!("Enter the number of columns: ");
+        get_number_from_input().expect("Failed to read number of columns")
+    });
+    let rows = cli.rows.unwrap_or_else(|| {
+        println!("Enter the number of rows: ");
+        get_number_from_input().expect("Failed to read number of rows")
+    });
 
     let mut wfc = Wfc::new(cols, rows, ruleset);
     wfc.run(SAVE_TO_FILE)?;
@@ -39,7 +46,7 @@ fn get_number_from_input() -> Result<usize> {
     Ok(buffer.trim().parse::<usize>()?)
 }
 
-fn read_ruleset_from_file() -> Result<Ruleset> {
-    let file_content = std::fs::read_to_string(DEFAULT_RULESET_FILE)?;
+fn read_ruleset_from_file(path: String) -> Result<Ruleset> {
+    let file_content = fs::read_to_string(path)?;
     Ok(Ruleset::from_yaml(&file_content)?)
 }
