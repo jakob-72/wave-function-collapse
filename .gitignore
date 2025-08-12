@@ -2,3 +2,4 @@
 *.iml
 .idea
 output.csv
+.DS_Store

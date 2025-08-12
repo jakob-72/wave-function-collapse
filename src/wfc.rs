@@ -135,10 +135,10 @@ impl Wfc {
                 let allowed_fields = self.ruleset.get_allowed_fields(neighbor_field, dir.inv())?;
                 result.retain(|&field, _| allowed_fields.contains_key(&field));
                 for (field, weight) in allowed_fields {
-                    if let Some(existing_weight) = result.get_mut(field) {
-                        if existing_weight != weight {
-                            *existing_weight *= weight;
-                        }
+                    if let Some(existing_weight) = result.get_mut(field)
+                        && existing_weight != weight
+                    {
+                        *existing_weight *= weight;
                     }
                 }
             }
